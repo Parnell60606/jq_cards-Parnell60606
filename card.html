@@ -1,0 +1,292 @@
+
+  <!DOCTYPE html>
+  <html lang="en">
+
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+      body {
+        padding: 0;
+        margin: 0;
+        list-style: none;
+        font-family: '微軟正黑';
+      }
+
+      .container {
+        /* width: 100%; */
+        height: 75vh;
+        margin: 70px;
+        padding: 15px;
+        position: relative;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: url(./image/pawel-czerwinski-ruJm3dBXCqw-unsplash.jpg);
+        background-size: 150%;
+        background-position: 50% 0%;
+      }
+
+      /* 特效 */
+      .container::before {
+        position: absolute;
+        content: '';
+        border-radius: 50px;
+        left: 20px;
+        right: 20px;
+        top: 20px;
+        bottom: 20px;
+        backdrop-filter: hue-rotate(0deg) brightness(0.7) blur(2px);
+        animation: backdrop-filter 10s linear infinite forwards;
+      }
+
+      /* 開始遊戲 */
+      #start-game {
+        position: absolute;
+        content: '';
+        left: 20px;
+        right: 20px;
+        top: 20px;
+        bottom: 20px;
+        border-radius: 50px;
+        background-color: rgba(184, 215, 227, 0.9);
+
+        z-index: 10;
+      }
+
+      .starBtn {
+        width: 370px;
+        height: 150px;
+        font-size: 100px;
+        color: white;
+      }
+
+      .starBtn:hover {
+        color: cadetblue;
+      }
+
+
+      .container-animate {
+        animation: background-move 60s linear infinite forwards;
+      }
+
+      @keyframes background-move {
+        25% {
+          background-position: 0% 50%;
+        }
+
+        50% {
+          background-position: 50% 100%;
+        }
+
+        75% {
+          background-position: 100% 50%;
+        }
+      }
+
+      @keyframes backdrop-filter {
+        50% {
+          backdrop-filter: hue-rotate(180deg) brightness(1) blur(10px);
+        }
+      }
+
+      /* .center {
+        position: absolute;
+        left: 0;
+        right: 0;
+        margin: 0 auto;
+      } */
+
+      .middle {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        margin: auto;
+      }
+
+      .card {
+        width: 100px;
+        height: 100px;
+        margin: 10px;
+        /* 設定子元素在 3D 空間內 */
+        transform-style: preserve-3d;
+        transition: transform 1s;
+      }
+
+      .card-front {
+        width: 100%;
+        height: 100%;
+        background-image: url('./image/card-01.png');
+        background-size: contain;
+        background-repeat: no-repeat;
+        background-position: center;
+        position: absolute;
+        transform: rotateX(180deg);
+
+        /* 翻過來後隱藏另一面 */
+        backface-visibility: hidden;
+      }
+
+      .card-back {
+        width: 100%;
+        height: 100%;
+        background-image: url('./image/card_back-01.png');
+        background-size: contain;
+        background-repeat: no-repeat;
+        background-position: center;
+        position: absolute;
+        backface-visibility: hidden;
+      }
+
+      .card-open {
+        transform: rotateX(180deg);
+      }
+
+      .card-ok {
+        pointer-events: none;
+      }
+
+      #game {
+        width: 700px;
+        height: 500px;
+        border-radius: 70px;
+        /* margin: auto; */
+        position: relative;
+        /* padding: 5px; */
+
+        /* backdrop-filter: blur(20px) brightness(1.2); */
+
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-content: center;
+      }
+
+      #end-game {
+        content: '';
+        position: absolute;
+        width: 100%;
+        height: 90px;
+        padding: 10px;
+        font-weight: 600;
+        font-size: larger;
+        text-align: center;
+        line-height: 40px;
+        background: white;
+        opacity: 0.5;
+
+      }
+
+      .display-none {
+        display: none;
+      }
+
+      .pointer-events-none {
+        pointer-events: none;
+      }
+    </style>
+    <!-- sweet alert -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <!-- JQ -->
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js'
+      integrity='sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ=='
+      crossorigin='anonymous'></script>
+  </head>
+
+
+
+  <body>
+    <div class="container container-animate">
+      <div id="start-game">
+        <div class="starBtn middle">START?</div>
+      </div>
+
+      <div id="game">
+      </div>
+
+      <div id="end-game" class="middle display-none ">遊戲結束<br><i>— Every 60 seconds in Africa, a mintue passes. —
+        </i>
+      </div>
+    </div>
+
+
+
+    <script>
+      // 開始
+    $('.starBtn').on('click', function () {
+      // $("#start-game").addClass('display-none');
+      $('#start-game').fadeOut(500)
+    })
+
+    // 產生卡片 ， 在 #game 內加入卡片
+    for (let i = 0; i < 20; i++) {
+      $('#game').append(`
+        <div class="card">
+          <div class="card-front"></div>
+          <div class="card-back"></div>
+        </div>
+      `)
+    }
+
+    for (let i = 0; i < 20; i++) {
+      // 決定數字
+      const num = i % 10 + 1
+      $('.card').eq(i).find('.card-front').css('background-image', `url(./image/card-${num}.png)`)
+      $('.card').eq(i).attr('data-card', num)
+
+      // 打散 random
+      const target = Math.round(Math.random() * 19)
+      $('.card').eq(target).insertAfter($('.card').eq(i))
+    }
+
+    /* 卡片被點擊翻牌 ---------------------- */
+    $('#game').on('click', '.card', function () {
+      // ------ 最多一次翻兩張，且這張牌還沒翻開
+      if ($('.card-open').length < 2 && !$(this).hasClass('card-open')) {
+        $(this).addClass('card-open')
+      }
+
+      // ------ 如果翻開兩張了
+      if ($('.card-open').length === 2) {
+        // 讓所有卡片先無法點擊
+        $('.card').addClass('pointer-events-none')
+
+        // 如果數字一樣
+        if ($('.card-open').eq(0).attr('data-card') === $('.card-open').eq(1).attr('data-card')) {
+          // 用 class 標記已完成
+          $('.card-open').addClass('card-ok')
+          // 將 .card-front 淡出，如果對 .card-open 淡出會把 3D 壓平只看到卡背
+          $('.card-open .card-front').fadeTo(1000, 0)
+        }
+
+        // 不管是否一樣都將卡片翻回
+        setTimeout(function () {
+          // 如果 .card-open 裡的 .card-front 透明度不是 1，把 .card-open 透明度設為 0
+          $('.card-open').each(function () {
+            if ($(this).find('.card-front').css('opacity') !== '1') {
+              $(this).css('opacity', 0)
+            }
+          })
+
+          // 一秒後讓卡片恢復點擊
+          $('.card').removeClass('pointer-events-none')
+
+          $('.card-open').removeClass('card-open')
+          if ($('.card-ok').length === 20) {
+            $("#game").eq(0).text("");
+            $('#end-game').removeClass('display-none')
+          }
+        }, 1000)
+
+      }
+    })
+    </script>
+
+  </body>
+
+  </html>
